@@ -1,5 +1,7 @@
 package demo;
 
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -122,8 +124,98 @@ public class TestCases {
     
           softAssert.assertAll();
           System.out.println("End Test case: testCase02");
+        }
+
+
+          @Test
+          public void testCase03() throws InterruptedException {
+          System.out.println("Start Test case: testCase03");
+
+          driver.navigate().back();
+          Thread.sleep(3000);
+          SoftAssert softAssert = new SoftAssert();
+
+          WebElement musicTab = driver.findElement(By.xpath("(//yt-formatted-string[text()='Music'])[1]"));
+          musicTab.click();
+          Thread.sleep(2000); // Wait for page to load
+ 
+         // Scroll to the extreme right in the first section
+         WebElement firstSection = driver.findElement(By.xpath("(//ytd-button-renderer[@class='style-scope yt-horizontal-list-renderer arrow'])[4]"));
+         Thread.sleep(2000);
+        //  JavascriptExecutor js = (JavascriptExecutor) driver;
+        //  js.executeScript("arguments[0].scrollLeft = arguments[0].scrollWidth", firstSection);
+
+        while (firstSection.isDisplayed()) {
+            
+          firstSection.click();
+          Thread.sleep(1000);
       }
-  }
+         
+ 
+         // Get the name of the playlist
+         WebElement playlistName = driver.findElement(By.xpath("(//h3[contains(text(),'Bollywood Dance')])[1]"));
+         String playlistTitle = playlistName.getText();
+         System.out.println("Playlist Name: " + playlistTitle);
+ 
+         // Get the number of tracks listed
+         WebElement tracksList = driver.findElement(By.xpath("(//p[@id='video-count-text' and contains(text(),'50 tracks')])[4]"));
+         String trackListTxt = tracksList.getText();
+
+        
+         // Soft Assert on whether the number of tracks listed is less than or equal to 50
+         softAssert.assertEquals(trackListTxt , "50 tracks");
+ 
+         softAssert.assertAll();
+         System.out.println("End Test case: testCase03");
+    }
+    
+        @Test
+        public void testCase04() throws InterruptedException {
+        System.out.println("Start Test case: testCase04");
+
+        driver.navigate().back();
+        Thread.sleep(3000);
+        SoftAssert softAssert = new SoftAssert();
+
+        
+        WebElement newsbutton=driver.findElement(By.xpath("(//yt-formatted-string[contains(text(),'News')])[1]"));
+        newsbutton.click();
+
+        String newslistName = newsbutton.getText();
+        System.out.println("newsbutton: " + newslistName);
+        Thread.sleep(2000);
+
+        WebElement first_Title=driver.findElement(By.xpath("(//yt-formatted-string[@id='home-content-text'])[1]"));
+        Thread.sleep(2000);
+        String firstOption=  first_Title.getText();
+        System.out.println("Headline1: " + firstOption );
+
+        WebElement second_Title = driver.findElement(By.xpath("(//yt-formatted-string[@id='home-content-text'])[2]"));
+        String secondOption =  second_Title.getText();
+        System.out.println("Headline2: " + secondOption );
+
+        WebElement third_Title = driver.findElement(By.xpath("(//yt-formatted-string[@id='home-content-text'])[3]"));
+        String thirdOption = third_Title.getText();
+        System.out.println("Headline3: " + thirdOption );
+
+        WebElement 
+
+
+        // softAssert.assertNotNull(newsbutton, "News button text should not be null");
+        // softAssert.assertNotNull(first_Title, "First post title should not be null");
+        // softAssert.assertNotNull(second_Title, "Second post title should not be null");
+        // softAssert.assertNotNull(third_Title, "Third post title should not be null");
+
+        System.out.println("End Test case: testCase04");
+        softAssert.assertAll();
+       
+
+         }
+    }
+  
+ 
+      
+  
 
 
            
