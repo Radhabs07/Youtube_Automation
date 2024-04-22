@@ -1,12 +1,17 @@
 package demo;
 
+import java.io.FileInputStream;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.poi.sl.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -176,6 +181,7 @@ public class TestCases {
         driver.navigate().back();
         Thread.sleep(3000);
         SoftAssert softAssert = new SoftAssert();
+        double result = 0;
 
         
         WebElement newsbutton=driver.findElement(By.xpath("(//yt-formatted-string[contains(text(),'News')])[1]"));
@@ -198,30 +204,127 @@ public class TestCases {
         String thirdOption = third_Title.getText();
         System.out.println("Headline3: " + thirdOption );
 
-        WebElement 
+        Thread.sleep(2000);
+        WebElement firstLikeCountElement = driver.findElement(By.xpath("(//span[@id='vote-count-middle'])[1]"));
+        String firstLikeCountText = firstLikeCountElement.getText();
+        
 
+        // if (firstLikeCountText.contains("k")) {
+        //   result = Double.parseDouble(firstLikeCountText.replace("k", "")) * 1000;
+        //  }
+        System.out.println("Likes for the first headline: " + firstLikeCountText);
 
-        // softAssert.assertNotNull(newsbutton, "News button text should not be null");
-        // softAssert.assertNotNull(first_Title, "First post title should not be null");
-        // softAssert.assertNotNull(second_Title, "Second post title should not be null");
-        // softAssert.assertNotNull(third_Title, "Third post title should not be null");
+        WebElement secondLikeCountElement = driver.findElement(By.xpath("(//span[@id='vote-count-middle'])[2]"));
+        String secondLikeCountText = secondLikeCountElement.getText();
+
+        // if (secondLikeCountText.contains("k")) {
+        //   result = Double.parseDouble(secondLikeCountText.replace("k", "")) * 1000;
+        //  }
+        System.out.println("Likes for the second headline: " + secondLikeCountText);
+
+      
+        WebElement thirdLikeCountElement = driver.findElement(By.xpath("(//span[@id='vote-count-middle'])[3]"));
+        String thirdLikeCountText = thirdLikeCountElement.getText();
+
+        // if (thirdLikeCountText.contains("K")) {
+        // result = Double.parseDouble(thirdLikeCountText.replace("K", "").replace(",", "")) * 1000;
+
+        // }
+
+       int likes;
+       if (thirdLikeCountText.contains("K")) {
+       double likesValue = Double.parseDouble(thirdLikeCountText.replace("K", "").replace(",", "")) * 1000;
+       likes = (int) likesValue;
+       } else {
+       likes = Integer.parseInt(thirdLikeCountText.replace(",", ""));
+       }
+
+        System.out.println("Likes for the third headline: " + thirdLikeCountText);
+        
+         int LikeCount1 = Integer.parseInt(firstLikeCountText);
+         int LikeCount2 = Integer.parseInt(secondLikeCountText);
+        // int LikeCount3 = Integer.parseInt(thirdLikeCountText);
+
+        int resultCount= LikeCount1 + LikeCount2 + likes;
+
+        System.out.println("Total like Counts : "  + resultCount);
+        softAssert.assertAll();
 
         System.out.println("End Test case: testCase04");
-        softAssert.assertAll();
-       
-
-         }
-    }
-  
- 
+        
       
-  
-
-
-           
-
-
+    }
     
+      
+        @Test(enabled = true, dataProvider = "excelData")
+        public void testCase05(String Search_Keyword) throws InterruptedException {
+    
+          try {
+                System.out.println("Start Test case: testCase06");
+    
+            // Navigate to Previous Page
+            driver.navigate().back();
+    
+            Thread.sleep(3000);
+    
+            WebElement searchBox = driver.findElement(By.xpath("//input[@id='search']"));
+    
+            SeleniumWrapper.clickAction(searchBox, driver);
+    
+            SeleniumWrapper.enterText(searchBox, Search_Keyword);
+    
+            WebElement searchBoxClick = driver.findElement(By.id("search-icon-legacy"));
+    
+            SeleniumWrapper.clickAction(searchBoxClick, driver);
+    
+            //Get a List of Views using List of WebElement
+            List<WebElement> viewsList = driver.findElements(By.xpath("//span[contains(text(), 'views')]"));
+    
+            // Declare the viewCount initially as 0
+            int actual_count = 0;
+            // Declare a Empty String for the View Count
+            String getViewCount = "";
+    
+            for (WebElement viewCount : viewsList) {
+                String viewcountString = viewCount.getText();
+    
+                //If viewCount Contains 'M views', remove 'M views'
+                if (viewcountString.contains("M views")) {
+                    getViewCount = viewcountString.replace("M views", "");
+                }
+                //If viewCount Contains 'K views', remove 'K views'
+                if (viewcountString.contains("K views")) {
+                    getViewCount = viewcountString.replace("K views", "");
+                }
+                // String getViewCount = viewcountString.replace("M views", "");
+                float numericviewCount = Float.parseFloat(getViewCount);
+                actual_count += numericviewCount;
+    
+                if (actual_count >= 10000000) { // Checking if the total count reaches 10 million
+                    actual_count = 10000000; // Cap the count to 10 million
+                    break; // Exit the loop since the target has been reached
+                }
+            }
+    
+            // Print Total View Count in Terminal
+            System.out.println("Actual Count:" + actual_count);
+            } catch (Exception e) {
+                // TODO: handle exception
+                e.printStackTrace();
+            }
+            System.out.println("end Test case: testCase05");
+        }
 
-
-
+        @DataProvider(name = "excelData")
+        public Object[][] searchData() {
+            return new Object[][]{
+                    {"Movies"},
+                    {"Music"},
+                    {"Games"},
+                    {"India"},
+                    {"UK"}
+             
+        
+      };
+    }
+  }
